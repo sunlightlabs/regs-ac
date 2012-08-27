@@ -1,0 +1,4 @@
+-e git+https://github.com/apendleton/flamebroiler.git#egg=flamebroiler
+-e git+https://github.com/sunlightlabs/regs-models.git#egg=regs_models
+Flask
+gunicorn
