@@ -58,7 +58,9 @@ def ac():
         if len(out) >= 10:
             break
 
-    return json.dumps({'matches': out})
+    callback = request.args.get('callback', None)
+    json_out = json.dumps({'matches': out})
+    return "%s(%s)" % (callback, json_out) if callback else json_out
 
 if __name__ == '__main__':
     app.run()
