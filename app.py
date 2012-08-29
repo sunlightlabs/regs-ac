@@ -22,7 +22,7 @@ for agency in regs_models.Agency.objects().only('id', 'name'):
     if agency.name:
         trie[agency.name.lower()] = data
 
-for org in regs_models.Entity.objects(td_type="organization", stats__submitter_mentions__count__gte=5).only('id', 'aliases'):
+for org in regs_models.Entity.objects(td_type="organization", stats__submitter_mentions__count__gte=1).only('id', 'aliases'):
     if org.aliases:
         data = "o|%s|%s" % (org.id, org.aliases[0])
         for alias in org.aliases:
@@ -51,8 +51,8 @@ def ac():
                 out.append({
                     'term': pretty_term,
                     'type': types[ms[0]],
-                    'id': ms[1],
-                    'name': ms[2]
+                    'value': ms[1],
+                    'label': ms[2]
                 })
         
         if len(out) >= 10:
