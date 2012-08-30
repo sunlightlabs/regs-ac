@@ -16,23 +16,23 @@ import re
 
 trie = Trie()
 
-for agency in regs_models.Agency.objects().only('id', 'name'):
-    data = "a|%s|%s" % (agency.id, agency.name if agency.name else agency.id)
-    trie[agency.id.lower()] = data
-    if agency.name:
-        trie[agency.name.lower()] = data
-
 for org in regs_models.Entity.objects(td_type="organization", stats__submitter_mentions__count__gte=1).only('id', 'aliases'):
     if org.aliases:
         data = "o|%s|%s" % (org.id, org.aliases[0])
         for alias in org.aliases:
             trie[alias.lower()] = data
 
+for agency in regs_models.Agency.objects().only('id', 'name'):
+    data = "a|%s|%s" % (agency.id, agency.name if agency.name else agency.id)
+    trie[agency.id.lower()] = data
+    if agency.name:
+        trie[agency.name.lower()] = data
+
 # endpoint
 app = Flask(__name__)
 
 spaces = re.compile('(\W+)')
-types = {'a': 'agency', 'o': 'organization'}
+types = {'a': 'agency', 'o': 'submitter'}
 
 @app.route("/ac")
 def ac():
