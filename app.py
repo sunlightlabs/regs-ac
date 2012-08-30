@@ -1,4 +1,4 @@
-import sys
+import sys, os
 
 try:
     import local_settings as settings
@@ -8,7 +8,7 @@ sys.modules['settings'] = settings
 
 import regs_models
 from flamebroiler import Trie
-from flask import Flask, request
+from flask import Flask, request, Response
 import json
 import re
 
@@ -30,6 +30,7 @@ for agency in regs_models.Agency.objects().only('id', 'name'):
 
 # endpoint
 app = Flask(__name__)
+app.debug = bool(os.environ.get('DEBUG', 0))
 
 spaces = re.compile('(\W+)')
 types = {'a': 'agency', 'o': 'submitter'}
@@ -60,7 +61,10 @@ def ac():
 
     callback = request.args.get('callback', None)
     json_out = json.dumps({'matches': out})
-    return "%s(%s)" % (callback, json_out) if callback else json_out
+    if callback:
+        return Response("%s(%s)" % (callback, json_out), mimetype="text/javascript")
+    else:
+        return Response(json_out, mimetype="application/json")
 
 if __name__ == '__main__':
     app.run()
