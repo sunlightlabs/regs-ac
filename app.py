@@ -38,13 +38,17 @@ types = {'a': 'agency', 'o': 'submitter'}
 @app.route("/ac")
 def ac():
     full_term = request.args.get('term', '')
+    type_filter = request.args.get('type', None)
     terms = spaces.split(full_term.strip())
     nterms = len(terms)
     out = []
     
     for tstart in xrange(0, nterms, 2):
         term = " ".join(terms[tstart:nterms:2]).lower()
-        matches = trie.suffixes(term, max_matches=10 - len(out))
+        if type_filter:
+            matches = [match for match in trie.suffixes(term, 100) if match.startswith(type_filter[0])][:10]
+        else:
+            matches = trie.suffixes(term, max_matches=10 - len(out))
         if matches:
             pretty_term = "".join(terms[tstart:nterms])
             for match in matches:
